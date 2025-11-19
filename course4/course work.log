@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.11.10)  18 NOV 2025 11:57
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.11.10)  19 NOV 2025 09:54
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -826,16 +826,16 @@ Package pdftex.def Info: figdom1.png  used on input line 179.
 
 
 [6]
-<figdom2.png, id=247, 423.5825pt x 440.64626pt>
-File: figdom2.png Graphic file (type png)
-<use figdom2.png>
-Package pdftex.def Info: figdom2.png  used on input line 186.
-(pdftex.def)             Requested size: 364.19667pt x 378.88115pt.
+<figdom2.jpeg, id=247, 881.2925pt x 893.3375pt>
+File: figdom2.jpeg Graphic file (type jpg)
+<use figdom2.jpeg>
+Package pdftex.def Info: figdom2.jpeg  used on input line 186.
+(pdftex.def)             Requested size: 364.19667pt x 369.1742pt.
 
 
 [7 <./figdom1.png>]
 
-[8 <./figdom2.png>]
+[8 <./figdom2.jpeg>]
 Overfull \hbox (20.52138pt too wide) in paragraph at lines 212--213
 []\T2A/cmr/m/n/12 Предложен вос-про-из-во-ди-мый кон-вей-ер: нор-ми-ров-ка \TS1
 /cmr/m/n/12 ^^Y \T2A/cmr/m/n/12 ка-либ-ров-ка зна-ка/масштаба
@@ -931,10 +931,10 @@ Package rerunfilecheck Info: File `"course work".out' has not changed.
 (rerunfilecheck)             Checksum: 21D0853A44D5332DBF08803E253A3C9E;10453.
  ) 
 Here is how much of TeX's memory you used:
- 18257 strings out of 473190
- 338988 string characters out of 5715799
+ 18263 strings out of 473190
+ 339097 string characters out of 5715799
  721603 words of memory out of 5000000
- 41195 multiletter control sequences out of 15000+600000
+ 41201 multiletter control sequences out of 15000+600000
  571843 words of font info for 68 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,14n,80p,1104b,1180s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -954,9 +954,9 @@ ve/2025/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive
 025/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/202
 5/texmf-dist/fonts/type1/public/cm-super/sftt1200.pfb></usr/local/texlive/2025/
 texmf-dist/fonts/type1/public/cm-super/sftt1440.pfb>
-Output written on "course work.pdf" (20 pages, 2131796 bytes).
+Output written on "course work.pdf" (20 pages, 1670324 bytes).
 PDF statistics:
- 458 PDF objects out of 1000 (max. 8388607)
+ 457 PDF objects out of 1000 (max. 8388607)
  391 compressed objects within 4 object streams
  118 named destinations out of 1000 (max. 500000)
  309 words of extra memory for PDF output out of 10000 (max. 10000000)

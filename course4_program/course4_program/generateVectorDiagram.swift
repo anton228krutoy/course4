@@ -68,7 +68,7 @@ func analyzeDomains(from image: NSImage,
     }
 
     let range = maxB - minB
-    let tDark = minB + 0.25 * range      // тёмные домены
+    let tDark = minB + 0.50 * range      // тёмные домены
     let tBright = minB + 0.75 * range    // светлые домены
 
     struct Domain {
