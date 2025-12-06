@@ -11,6 +11,14 @@ struct ContentView: View {
 
     @State private var showVectorDiagram: Bool = false
 
+    // Кэш анализа изображения (яркость + базовые пороги Otsu)
+    @State private var analysisCache: ImageAnalysisCache?
+
+    // Ползунки: 0..1, где 0.5 = значение Otsu
+    // При 0: порог×0.8, при 1: порог×1.2
+    @State private var darkSlider: Double = 0.5
+    @State private var brightSlider: Double = 0.5
+
     private let canvasSize: CGFloat = 400
 
     var body: some View {
@@ -24,21 +32,74 @@ struct ContentView: View {
                         self.brightBoundaryPoints = []
                         self.darkBoundaryPoints = []
                         self.showVectorDiagram = false
+                        self.analysisCache = nil
+                        // Сброс ползунков на середину
+                        self.darkSlider = 0.5
+                        self.brightSlider = 0.5
                     }
                 }
 
                 Button("Векторная диаграмма") {
-                    if let img = image {
-                        let vis = analyzeDomains(from: img, targetSize: canvasSize)
-                        self.vectorArrows = vis.arrows
-                        self.brightBoundaryPoints = vis.brightBoundaryPoints
-                        self.darkBoundaryPoints = vis.darkBoundaryPoints
-                        self.showVectorDiagram = true
+                    guard let img = image else { return }
+                    
+                    // Создаём кэш, если его ещё нет
+                    if analysisCache == nil {
+                        analysisCache = createAnalysisCache(from: img)
                     }
+                    
+                    guard let cache = analysisCache else { return }
+                    
+                    let vis = analyzeDomains(
+                        cache: cache,
+                        targetSize: canvasSize,
+                        darkSlider: darkSlider,
+                        brightSlider: brightSlider
+                    )
+                    self.vectorArrows = vis.arrows
+                    self.brightBoundaryPoints = vis.brightBoundaryPoints
+                    self.darkBoundaryPoints = vis.darkBoundaryPoints
+                    self.showVectorDiagram = true
                 }
                 .disabled(image == nil)
             }
             .padding(.top, 16)
+
+            // Ползунки для настройки порогов
+            // 0 = base×0.8, 0.5 = base (Otsu), 1 = base×1.2
+            VStack(spacing: 8) {
+                HStack {
+                    Text("Порог тёмных:")
+                        .frame(width: 120, alignment: .leading)
+                    Text("×0.80")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Slider(value: $darkSlider, in: 0...1)
+                        .frame(width: 180)
+                    Text("×1.20")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(sliderMultiplierText(darkSlider))
+                        .frame(width: 50, alignment: .trailing)
+                        .font(.caption)
+                }
+
+                HStack {
+                    Text("Порог ярких:")
+                        .frame(width: 120, alignment: .leading)
+                    Text("×0.80")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Slider(value: $brightSlider, in: 0...1)
+                        .frame(width: 180)
+                    Text("×1.20")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(sliderMultiplierText(brightSlider))
+                        .frame(width: 50, alignment: .trailing)
+                        .font(.caption)
+                }
+            }
+            .padding(.horizontal)
 
             Divider()
 
@@ -160,6 +221,12 @@ struct DomainBoundaryView: View {
             }
         }
     }
+}
+
+/// Форматирование множителя для отображения
+func sliderMultiplierText(_ slider: Double) -> String {
+    let multiplier = 0.8 + slider * 0.4
+    return String(format: "×%.2f", multiplier)
 }
 
 func openImageFile(completion: @escaping (NSImage?) -> Void) {

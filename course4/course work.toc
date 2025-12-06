@@ -5,34 +5,32 @@
 \contentsline {subsubsection}{\numberline {2.1.1}Тензор диэлектрической проницаемости}{2}{subsubsection.2.1.1}%
 \contentsline {subsubsection}{\numberline {2.1.2}Комплексный угол Керра}{3}{subsubsection.2.1.2}%
 \contentsline {subsubsection}{\numberline {2.1.3}Геометрии МОЭК}{3}{subsubsection.2.1.3}%
-\contentsline {subsection}{\numberline {2.2}Ключевые принципы работы микроскопа Керра и количественный анализ}{3}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Интенсивность и создание контраста}{3}{subsubsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2}Ключевые принципы работы микроскопа Керра и количественный анализ}{4}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Интенсивность и создание контраста}{4}{subsubsection.2.2.1}%
 \contentsline {subsubsection}{\numberline {2.2.2}Векторная и количественная визуализация}{4}{subsubsection.2.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.3}Процедура количественной реконструкции}{4}{subsubsection.2.2.3}%
-\contentsline {section}{\numberline {3}Постановка задачи}{5}{section.3}%
-\contentsline {section}{\numberline {4}Основная часть}{6}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Определения границ доменов}{6}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {2.2.3}Процедура количественной реконструкции}{5}{subsubsection.2.2.3}%
+\contentsline {section}{\numberline {3}Постановка задачи}{6}{section.3}%
+\contentsline {section}{\numberline {4}Основная часть}{7}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Определения границ доменов}{7}{subsection.4.1}%
 \contentsline {section}{\numberline {5}Выводы}{9}{section.5}%
-\contentsline {section}{\numberline {A}Физическое приложение}{11}{appendix.A}%
-\contentsline {subsection}{\numberline {A.1}Магнитооптический эффект Керра}{11}{subsection.A.1}%
-\contentsline {subsection}{\numberline {A.2}Геометрии и чувствительность}{11}{subsection.A.2}%
-\contentsline {subsection}{\numberline {A.3}Магнитные домены и стенки}{11}{subsection.A.3}%
-\contentsline {subsection}{\numberline {A.4}Линейная модель сигнала и ограничения}{11}{subsection.A.4}%
-\contentsline {paragraph}{Режим около экстинкции и линейность.}{11}{section*.12}%
+\contentsline {section}{\numberline {A}Физическое приложение}{12}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}Магнитные домены и стенки}{12}{subsection.A.1}%
+\contentsline {subsection}{\numberline {A.2}Линейная модель сигнала и ограничения}{12}{subsection.A.2}%
+\contentsline {paragraph}{Режим около экстинкции и линейность.}{12}{section*.12}%
 \contentsline {section}{\numberline {B}Математическое приложение}{12}{appendix.B}%
 \contentsline {subsection}{\numberline {B.1}Постановка}{12}{subsection.B.1}%
 \contentsline {subsection}{\numberline {B.2}Нормировка и наблюдаемые}{12}{subsection.B.2}%
-\contentsline {subsection}{\numberline {B.3}Линейная модель и один кадр}{12}{subsection.B.3}%
-\contentsline {subsection}{\numberline {B.4}Два независимых кадра}{12}{subsection.B.4}%
+\contentsline {subsection}{\numberline {B.3}Линейная модель и один кадр}{13}{subsection.B.3}%
+\contentsline {subsection}{\numberline {B.4}Два независимых кадра}{13}{subsection.B.4}%
 \contentsline {subsection}{\numberline {B.5}Сегментация доменов}{13}{subsection.B.5}%
 \contentsline {subsection}{\numberline {B.6}Оценка локальной ориентации: структурный тензор}{13}{subsection.B.6}%
-\contentsline {subsection}{\numberline {B.7}Предобработка и устойчивость}{13}{subsection.B.7}%
-\contentsline {subsection}{\numberline {B.8}Калибровка на насыщении и знак}{13}{subsection.B.8}%
-\contentsline {subsection}{\numberline {B.9}Проверка независимости и ковариация}{13}{subsection.B.9}%
+\contentsline {subsection}{\numberline {B.7}Предобработка и устойчивость}{14}{subsection.B.7}%
+\contentsline {subsection}{\numberline {B.8}Калибровка на насыщении и знак}{14}{subsection.B.8}%
+\contentsline {subsection}{\numberline {B.9}Проверка независимости и ковариация}{14}{subsection.B.9}%
 \contentsline {subsection}{\numberline {B.10}Псевдокод конвейера}{14}{subsection.B.10}%
 \contentsline {section}{\numberline {C}Программное приложение}{14}{appendix.C}%
 \contentsline {subsection}{\numberline {C.1}Общая архитектура}{14}{subsection.C.1}%
-\contentsline {subsection}{\numberline {C.2}Точка входа: \texttt {course4\_programApp.swift}}{14}{subsection.C.2}%
+\contentsline {subsection}{\numberline {C.2}Точка входа: \texttt {course4\_programApp.swift}}{15}{subsection.C.2}%
 \contentsline {subsection}{\numberline {C.3}Пользовательский интерфейс: \texttt {ContentView.swift}}{15}{subsection.C.3}%
 \contentsline {subsection}{\numberline {C.4}Алгоритмы анализа: \texttt {generateVectorDiagram.swift}}{17}{subsection.C.4}%
 \contentsline {subsection}{\numberline {C.5}Связка кода и физических моделей}{19}{subsection.C.5}%
