@@ -28,6 +28,37 @@
 \setlist[itemize]{noitemsep,topsep=2pt}
 \setlist[enumerate]{noitemsep,topsep=2pt}
 
+% Настройки для листингов кода
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    escapeinside={(*@}{@*)}
+}
+
+\lstset{style=mystyle}
+
 \begin{document}
 
 % ТИТУЛ
@@ -56,10 +87,6 @@
 \newpage
 
 \section{Введение}
-
-Магнитооптический эффект Керра — изменение поляризации отражённого света от намагниченного материала; наблюдаются вращение плоскости поляризации и эллиптичность, чувствительные к намагниченности в зоне зондирования света. В линейном по намагниченности приближении комплексный керровский угол \(\rho_K=\theta_K+i\epsilon_K\) при p-поляризованном падении аппроксимируется через элементы матрицы отражения как \(\rho_K\approx r_{ps}/r_{pp}\) (для s-падения \(\rho_K\approx r_{sp}/r_{ss}\)); чувствительность определяется внедиагональными компонентами диэлектрического тензора, пропорциональными компонентам \(\mathbf M\).
-
-
 Магнитооптическая микроскопия по эффекту Керра позволяет визуализировать магнитные домены и их динамику за счёт зависимости поляризационных характеристик отражённого света от вектора намагниченности в зоне зондирования. В тонких плёнках и мультиматериалах эта техника даёт прямую чувствительность к определённой проекции намагниченности, что делает возможным извлечение направления магнитного момента по одиночному или паре изображений. 
 
 Цель работы — разработать и верифицировать алгоритм и программный прототип на Swift/macOS для оценки направления магнитного момента по МОЭК-изображениям с учётом калибровок, устойчивости и метрик качества, а также сформировать целостное описание физической, математической и программной частей.
@@ -147,8 +174,6 @@ $$
     \caption{Схематическое изображение установки широкопольного МОЭК-магнитометра, включающего массив светодиодов (LED cross), управляемых компьютером, для установки направления падения света и обеспечения ортогональных чувствительностей. (Источник: Рисунок 1(a) из "Advanced, Kerr-microscopy-based MOKE magnetometry for the anisotropy characterisation of magnetic films").}
 \end{figure}
 
-\newpage
-
 \section{Постановка задачи}
 
 Физическая часть:
@@ -220,8 +245,6 @@ Y = 0.299 \cdot R + 0.587 \cdot G + 0.114 \cdot B
   \item Введены критерии устойчивости и качества, позволяющие контролировать применимость линейной модели и корректность восстановления направления \(\mathbf M\).
 \end{itemize}
 
-\newpage
-
 \section*{Список литературы} \vspace{-4mm}
 \begin{enumerate}
   \item Smith J. Example Article // Some Journal, 2022.
@@ -255,6 +278,17 @@ Y = 0.299 \cdot R + 0.587 \cdot G + 0.114 \cdot B
 \appendix
 
 \section{Физическое приложение}
+\subsection{Магнитооптический эффект Керра}
+Магнитооптический эффект Керра — изменение поляризации отражённого света от намагниченного материала; наблюдаются вращение плоскости поляризации и эллиптичность, чувствительные к намагниченности в зоне зондирования света. В линейном по намагниченности приближении комплексный керровский угол \(\rho_K=\theta_K+i\epsilon_K\) при p-поляризованном падении аппроксимируется через элементы матрицы отражения как \(\rho_K\approx r_{ps}/r_{pp}\) (для s-падения \(\rho_K\approx r_{sp}/r_{ss}\)); чувствительность определяется внедиагональными компонентами диэлектрического тензора, пропорциональными компонентам \(\mathbf M\).
+
+\subsection{Геометрии и чувствительность}
+Рабочие геометрии МОКЭ и чувствительные компоненты \(\mathbf M\):
+\begin{itemize}
+  \item Полярная: чувствительна к внеплоскостной компоненте \(M_z\); удобна при близком к нормальному падении.
+  \item Продольная: чувствительна к проекции в плоскости образца вдоль плоскости падения \(M_{\parallel}\).
+  \item Поперечная: проявляется как изменение отражения \(\Delta R/R \propto M_{\perp}\) к плоскости падения; вращения плоскости поляризации нет.
+\end{itemize}
+При анализаторе около экстинкции фотосигнал становится к первой степени линейной функцией \(\rho_K\), что даёт линейную зависимость измеряемого сигнала от соответствующей проекции \(\mathbf M\).
 
 \subsection{Магнитные домены и стенки}
 Ферромагнитная плёнка разбивается на домены — области квази-единой ориентации \(\mathbf M\), разделённые доменными стенками с быстрым поворотом направления; МОКЭ-микроскопия визуализирует контраст доменов за счёт изменения \(\rho_K\) при смене компоненты \(\mathbf M\), на которую настроена чувствительность.
@@ -369,25 +403,74 @@ Y = 0.299 \cdot R + 0.587 \cdot G + 0.114 \cdot B
 
 \section{Программное приложение}
 
-В рамках работы было разработано настольное приложение на языке Swift для macOS с использованием фреймворка SwiftUI. Цель приложения — предоставить удобный инструмент для загрузки МОЭК-изображений, автоматического выделения доменных областей и границ доменов, а также визуализации векторного поля, соответствующего локальному направлению магнитного момента. Приложение реализует описанный ранее алгоритм обработки изображений и позволяет наглядно сравнивать исходные данные с результатами анализа.
+Для практической реализации алгоритмов анализа магнитных доменов было разработано приложение для операционной системы macOS. Приложение написано на языке Swift с использованием фреймворка SwiftUI для построения пользовательского интерфейса.
 
-\subsection{Общая архитектура}
+\subsection{Архитектура приложения}
 
-Приложение состоит из трёх основных модулей:
-
+Проект построен по модульному принципу, разделяя логику обработки данных и пользовательский интерфейс. Структура проекта включает три основных компонента:
 \begin{itemize}
-    \item \textbf{course4\_programApp.swift} — точка входа в приложение, задающая корневое окно и подключающая основной интерфейс.
-    \item \textbf{ContentView.swift} — пользовательский интерфейс на SwiftUI, обеспечивающий загрузку изображения, запуск анализа и отображение результатов.
-    \item \textbf{generateVectorDiagram.swift} — модуль алгоритмов обработки изображения, включающий вычисление яркости, определение доменных областей и границ, построение векторного поля и подготовку данных для визуализации.
+    \item \textbf{course4\_programApp.swift} --- точка входа в приложение.
+    \item \textbf{ContentView.swift} --- описание пользовательского интерфейса и взаимодействия с пользователем.
+    \item \textbf{generateVectorDiagram.swift} --- реализация алгоритмов обработки изображений и анализа доменов.
 \end{itemize}
 
-Общая схема работы такова: пользователь выбирает изображение, интерфейс передаёт его в модуль анализа, который возвращает структуру данных с векторами и набором ключевых точек. Затем эти данные отображаются поверх исходного изображения в виде стрелок и линий границ доменов.
+Полный листинг исходного кода приведен в разделе \ref{sec:code_listing}.
 
-\subsection{Точка входа: \texttt{course4\_programApp.swift}}
+\subsection{Алгоритмы обработки и анализа}
 
-Этот файл задаёт основное окно приложения и подключает корневое представление интерфейса:
+Ядром приложения является модуль \texttt{generateVectorDiagram.swift} (см. Листинг \ref{lst:logic}). Процесс обработки изображения состоит из нескольких этапов.
 
-\begin{verbatim}
+\subsubsection{Предобработка и кэширование}
+При загрузке изображения оно преобразуется в матрицу яркости (Grayscale). Поскольку операции вычисления порогов и фильтрации могут требовать ресурсов, реализован механизм кэширования через класс \texttt{ImageAnalysisCache} (Листинг~\ref{lst:logic}, \hyperref[logic:cache]{строки 11--34}). Функция \texttt{createAnalysisCache} (\hyperref[logic:createcache]{строки 152--222}) выполняет первичную обработку, в ходе которой вычисляются и сохраняются:
+\begin{itemize}
+    \item Матрица яркости пикселей (\hyperref[logic:matrix]{строки 175--191}).
+    \item Минимальное и максимальное значения яркости (\hyperref[logic:minmax]{строки 180--190}).
+    \item Базовые пороги сегментации, вычисленные автоматически (\hyperref[logic:basethresh]{строки 208--221}).
+\end{itemize}
+Яркость пикселя вычисляется по стандартной формуле преобразования RGB в Grayscale (\hyperref[logic:brightness]{строки 163--173}):
+\[
+Y = 0.299 \cdot R + 0.587 \cdot G + 0.114 \cdot B
+\]
+Это позволяет быстрее пересчитывать результаты при ручной корректировке параметров пользователем без повторного чтения данных изображения.
+
+\subsubsection{Автоматическая пороговая сегментация (Метод Оцу)}
+Для автоматического определения границ доменов реализован модифицированный двухуровневый метод Оцу (функция \texttt{otsuDualThreshold}, Листинг~\ref{lst:logic}, \hyperref[logic:otsu]{строки 43--149}). Алгоритм находит два оптимальных порога, разделяющих пиксели на три класса:
+\begin{enumerate}
+    \item Тёмные области (домены одного направления).
+    \item Светлые области (домены противоположного направления).
+    \item Нейтральные области (переходные зоны, границы, шум).
+\end{enumerate}
+Для повышения устойчивости к шуму перед вычислением гистограммы отбрасываются по 5\% самых темных и самых светлых пикселей (trimming, \hyperref[logic:trim]{строки 62--91}). Оптимизация порогов выполняется путём максимизации межклассовой дисперсии (\hyperref[logic:variance]{строки 115--142}).
+
+\subsubsection{Сегментация и фильтрация доменов}
+Функция \texttt{analyzeDomains} (Листинг~\ref{lst:logic}, \hyperref[logic:analyze]{строки 225--406}) выполняет сегментацию изображения на основе порогов. Пользователь имеет возможность корректировать пороги относительно базовых значений Оцу с помощью коэффициентов (от $0.8$ до $1.2$), что реализовано через функцию \texttt{applySliderMultiplier} (\hyperref[logic:slider]{строки 37--40}). Применение порогов выполняется в \hyperref[logic:applythresh]{строках 234--235}.
+
+Для выделения связных областей используется алгоритм поиска в ширину (BFS, \hyperref[logic:bfs]{строки 257--304}). Пиксели группируются в домены, после чего применяется фильтрация по размеру: области, занимающие менее $1/5000$ площади изображения, считаются шумом и отбрасываются (\hyperref[logic:filter]{строки 307--308}).
+
+\subsubsection{Построение векторной диаграммы}
+Для каждого выделенного домена вычисляется его центроид (\hyperref[logic:centroid]{строки 370--381}). В зависимости от классификации домена (светлый или темный) ему приписывается условное направление вектора намагниченности (в текущей реализации — вверх или вниз, отображаемые красным и синим цветами соответственно, \hyperref[logic:direction]{строки 386--398}). Также алгоритм определяет пиксели границ доменов для их визуализации: граничными считаются пиксели, имеющие соседей из другого домена или находящиеся на краю изображения (\hyperref[logic:boundary]{строки 333--366}).
+
+\subsection{Пользовательский интерфейс}
+
+Интерфейс приложения (файл \texttt{ContentView.swift}, Листинг~\ref{lst:ui}) предоставляет следующие возможности:
+\begin{itemize}
+    \item Загрузка изображений форматов PNG и JPEG (функция \texttt{openImageFile}, \hyperref[ui:openfile]{строки 233--246}).
+    \item Визуализация исходного изображения (\hyperref[ui:original]{строки 110--120}).
+    \item Панель настроек с ползунками для точной подстройки порогов сегментации <<на лету>> (\hyperref[ui:sliders]{строки 68--103}).
+    \item Режим наложения результатов анализа: отображение границ доменов (\hyperref[ui:boundaries]{строки 123--141}) и векторного поля (\hyperref[ui:vectorfield]{строки 143--156}) поверх оригинального изображения.
+\end{itemize}
+Для эффективной отрисовки большого количества графических примитивов используются специализированные компоненты на базе \texttt{Canvas}: \texttt{ArrowFieldView} для отрисовки стрелок (\hyperref[ui:arrowfield]{строки 181--193}) и \texttt{DomainBoundaryView} для отрисовки точек границ (\hyperref[ui:domainboundary]{строки 196--225}), обеспечивающие высокую производительность.
+
+\newpage
+\section{Листинг программного кода} \label{sec:code_listing}
+
+\subsection{Точка входа (course4\_programApp.swift)}
+\begin{lstlisting}[language=Swift, caption=Точка входа в приложение, label=lst:main]
+//
+//  course4_programApp.swift
+//  course4_program
+//
+
 import SwiftUI
 
 @main
@@ -398,15 +481,10 @@ struct course4_programApp: App {
         }
     }
 }
-\end{verbatim}
+\end{lstlisting}
 
-Аннотация \texttt{@main} помечает структуру как точку входа. Внутри \texttt{body} создаётся сцена \texttt{WindowGroup}, в которой в качестве корневого представления используется \texttt{ContentView}. Таким образом, при запуске приложения автоматически открывается окно с основным интерфейсом анализа доменов.
-
-\subsection{Пользовательский интерфейс: \texttt{ContentView.swift}}
-
-Файл \texttt{ContentView.swift} реализует основное окно приложения, включая загрузку изображения, запуск анализа и отображение результатов. Упрощённая структура файла выглядит следующим образом:
-
-\begin{verbatim}
+\subsection{Интерфейс пользователя (ContentView.swift)}
+\begin{lstlisting}[language=Swift, caption=Пользовательский интерфейс, label=lst:ui]
 import SwiftUI
 import UniformTypeIdentifiers
 import AppKit
@@ -414,158 +492,428 @@ import AppKit
 struct ContentView: View {
     @State private var image: NSImage?
     @State private var vectorArrows: [Arrow] = []
+
     @State private var brightBoundaryPoints: [CGPoint] = []
     @State private var darkBoundaryPoints: [CGPoint] = []
+
     @State private var showVectorDiagram: Bool = false
+
+    // Кэш анализа изображения (яркость + базовые пороги Otsu)
+    @State private var analysisCache: ImageAnalysisCache?
+
+    // Ползунки: 0..1, где 0.5 = значение Otsu
+    // При 0: порог×0.8, при 1: порог×1.2
+    @State private var darkSlider: Double = 0.5
+    @State private var brightSlider: Double = 0.5
 
     private let canvasSize: CGFloat = 400
 
     var body: some View {
         VStack(spacing: 16) {
-            controlsSection
+
+            HStack(spacing: 12) {
+                Button("Загрузить изображение") {
+                    openImageFile { selectedImage in
+                        self.image = selectedImage
+                        self.vectorArrows = []
+                        self.brightBoundaryPoints = []
+                        self.darkBoundaryPoints = []
+                        self.showVectorDiagram = false
+                        self.analysisCache = nil
+                        // Сброс ползунков на середину
+                        self.darkSlider = 0.5
+                        self.brightSlider = 0.5
+                    }
+                }
+
+                Button("Векторная диаграмма") {
+                    guard let img = image else { return }
+                    
+                    // Создаём кэш, если его ещё нет
+                    if analysisCache == nil {
+                        analysisCache = createAnalysisCache(from: img)
+                    }
+                    
+                    guard let cache = analysisCache else { return }
+                    
+                    let vis = analyzeDomains(
+                        cache: cache,
+                        targetSize: canvasSize,
+                        darkSlider: darkSlider,
+                        brightSlider: brightSlider
+                    )
+                    self.vectorArrows = vis.arrows
+                    self.brightBoundaryPoints = vis.brightBoundaryPoints
+                    self.darkBoundaryPoints = vis.darkBoundaryPoints
+                    self.showVectorDiagram = true
+                }
+                .disabled(image == nil)
+            }
+            .padding(.top, 16)
+
+            // Ползунки для настройки порогов (*@\label{ui:sliders}@*)
+            // 0 = base×0.8, 0.5 = base (Otsu), 1 = base×1.2
+            VStack(spacing: 8) {
+                HStack {
+                    Text("Порог тёмных:")
+                        .frame(width: 120, alignment: .leading)
+                    Text("×0.80")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Slider(value: $darkSlider, in: 0...1)
+                        .frame(width: 180)
+                    Text("×1.20")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(sliderMultiplierText(darkSlider))
+                        .frame(width: 50, alignment: .trailing)
+                        .font(.caption)
+                }
+
+                HStack {
+                    Text("Порог ярких:")
+                        .frame(width: 120, alignment: .leading)
+                    Text("×0.80")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Slider(value: $brightSlider, in: 0...1)
+                        .frame(width: 180)
+                    Text("×1.20")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(sliderMultiplierText(brightSlider))
+                        .frame(width: 50, alignment: .trailing)
+                        .font(.caption)
+                }
+            }
+            .padding(.horizontal)
+
             Divider()
+
             ScrollView {
                 if let nsImage = image {
-                    imageAndResultsView(nsImage: nsImage)
+                    VStack(spacing: 24) {
+
+                        VStack(spacing: 8) { (*@\label{ui:original}@*)
+                            Text("Оригинал")
+                                .foregroundColor(.secondary)
+
+                            Image(nsImage: nsImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: canvasSize, height: canvasSize)
+                                .border(Color.gray)
+                        }
+
+                        if showVectorDiagram {
+
+                            VStack(spacing: 8) { (*@\label{ui:boundaries}@*)
+                                Text("Границы доменов")
+                                    .foregroundColor(.secondary)
+
+                                Image(nsImage: nsImage)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: canvasSize, height: canvasSize)
+                                    .overlay(
+                                        DomainBoundaryView(
+                                            brightPoints: brightBoundaryPoints,
+                                            darkPoints: darkBoundaryPoints
+                                        )
+                                        .frame(width: canvasSize, height: canvasSize)
+                                        .allowsHitTesting(false)
+                                    )
+                                    .border(Color.blue)
+                            }
+
+                            VStack(spacing: 8) { (*@\label{ui:vectorfield}@*)
+                                Text("Векторное поле")
+                                    .foregroundColor(.secondary)
+
+                                Image(nsImage: nsImage)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: canvasSize, height: canvasSize)
+                                    .overlay(
+                                        ArrowFieldView(arrows: vectorArrows)
+                                            .frame(width: canvasSize, height: canvasSize)
+                                            .allowsHitTesting(false)
+                                    )
+                                    .border(Color.blue)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 24)
                 } else {
-                    Text("Загрузите изображение для анализа")
+                    Text("Файл не выбран")
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding()
                 }
             }
-            .padding()
         }
-        .frame(minWidth: 600, minHeight: 500)
+        .frame(minWidth: 600, minHeight: 800)
+        .padding()
     }
 }
-\end{verbatim}
 
-Здесь хранятся несколько \texttt{@State}-переменных: загруженное изображение \texttt{image}, массив стрелок \texttt{vectorArrows}, списки точек светлых и тёмных границ доменов (\texttt{brightBoundaryPoints}, \texttt{darkBoundaryPoints}) и флаг \texttt{showVectorDiagram}, отвечающий за отображение векторной диаграммы поверх изображения.
-
-Блок \texttt{controlsSection} содержит кнопки для загрузки файла и запуска анализа. Типичный код выглядит так:
-
-\begin{verbatim}
-private var controlsSection: some View {
-    HStack(spacing: 12) {
-        Button("Открыть изображение") {
-            openImageFile { selectedImage in
-                self.image = selectedImage
-                self.vectorArrows = []
-                self.brightBoundaryPoints = []
-                self.darkBoundaryPoints = []
-                self.showVectorDiagram = false
-            }
-        }
-
-        Button("Анализировать домены") {
-            if let img = image {
-                let vis = analyzeDomains(from: img,
-                                         targetSize: canvasSize)
-                self.vectorArrows = vis.arrows
-                self.brightBoundaryPoints = vis.brightBoundaryPoints
-                self.darkBoundaryPoints = vis.darkBoundaryPoints
-                self.showVectorDiagram = true
-            }
-        }
-        .disabled(image == nil)
-    }
-    .padding(.top, 16)
+struct Arrow {
+    var start: CGPoint
+    var end: CGPoint
+    var color: Color
 }
-\end{verbatim}
 
-Функция \texttt{openImageFile} открывает системное диалоговое окно выбора файла (через \texttt{NSOpenPanel}), считывает выбранное изображение и передаёт его в обработчик. Кнопка «Анализировать домены» вызывает функцию \texttt{analyzeDomains(from:targetSize:)} из модуля обработки, которая возвращает структуру с результатами анализа (стрелки и точки границ доменов).
+struct ArrowFieldView: View { (*@\label{ui:arrowfield}@*)
+    var arrows: [Arrow]
 
-Отображение изображения и результатов реализовано через связку \texttt{Image} и \texttt{Canvas}. Сначала показывается исходное изображение, а при включённом флаге \texttt{showVectorDiagram} поверх него рисуются стрелки и точки границ:
-
-\begin{verbatim}
-private func imageAndResultsView(nsImage: NSImage) -> some View {
-    VStack(spacing: 24) {
-        VStack(spacing: 8) {
-            Text("Исходное изображение")
-                .foregroundColor(.secondary)
-            Image(nsImage: nsImage)
-                .resizable()
-                .scaledToFit()
-                .frame(width: canvasSize, height: canvasSize)
-        }
-
-        if showVectorDiagram {
-            VStack(spacing: 8) {
-                Text("Векторная диаграмма и границы доменов")
-                    .foregroundColor(.secondary)
-
-                Canvas { context, size in
-                    drawVectorDiagram(in: context, size: size)
-                }
-                .frame(width: canvasSize, height: canvasSize)
+    var body: some View {
+        Canvas { context, size in
+            for arrow in arrows {
+                var path = Path()
+                path.move(to: arrow.start)
+                path.addLine(to: arrow.end)
+                context.stroke(path, with: .color(arrow.color), lineWidth: 2)
             }
         }
     }
 }
-\end{verbatim}
 
-Функция \texttt{drawVectorDiagram} отрисовывает:
+struct DomainBoundaryView: View { (*@\label{ui:domainboundary}@*)
+    var brightPoints: [CGPoint] // зелёные
+    var darkPoints: [CGPoint]   // красные
 
-\begin{itemize}
-    \item стрелки векторов намагниченности из массива \texttt{vectorArrows};
-    \item точки (или маркеры) светлых границ доменов (\texttt{brightBoundaryPoints});
-    \item точки тёмных границ доменов (\texttt{darkBoundaryPoints}), которые можно выделять другим цветом.
-\end{itemize}
+    var body: some View {
+        Canvas { context, size in
+            let dotSize: CGFloat = 2.0
 
-Таким образом, \texttt{ContentView.swift} отвечает за взаимодействие с пользователем и визуализацию, а основная математика и анализ спрятаны в отдельном модуле.
+            for p in brightPoints {
+                let rect = CGRect(
+                    x: p.x - dotSize / 2,
+                    y: p.y - dotSize / 2,
+                    width: dotSize,
+                    height: dotSize
+                )
+                context.fill(Path(ellipseIn: rect), with: .color(.green))
+            }
 
-\subsection{Алгоритмы анализа: \texttt{generateVectorDiagram.swift}}
+            for p in darkPoints {
+                let rect = CGRect(
+                    x: p.x - dotSize / 2,
+                    y: p.y - dotSize / 2,
+                    width: dotSize,
+                    height: dotSize
+                )
+                context.fill(Path(ellipseIn: rect), with: .color(.red))
+            }
+        }
+    }
+}
 
-Файл \texttt{generateVectorDiagram.swift} содержит реализацию вычислительной части. В нём определена структура \texttt{DomainVisualization}, описывающая результат анализа, и функция \texttt{analyzeDomains(from:targetSize:)}, которая и вызывается из интерфейса.
+/// Форматирование множителя для отображения
+func sliderMultiplierText(_ slider: Double) -> String {
+    let multiplier = 0.8 + slider * 0.4
+    return String(format: "%.2f", multiplier)
+}
 
-\begin{verbatim}
+func openImageFile(completion: @escaping (NSImage?) -> Void) { (*@\label{ui:openfile}@*)
+    let panel = NSOpenPanel()
+    panel.allowedContentTypes = [.png, .jpeg]
+    panel.allowsMultipleSelection = false
+    panel.canChooseDirectories = false
+
+    if panel.runModal() == .OK,
+       let url = panel.url,
+       let nsImage = NSImage(contentsOf: url) {
+        completion(nsImage)
+    } else {
+        completion(nil)
+    }
+}
+\end{lstlisting}
+
+\subsection{Логика анализа (generateVectorDiagram.swift)}
+\begin{lstlisting}[language=Swift, caption=Алгоритмы обработки, label=lst:logic]
 import SwiftUI
 import AppKit
 
-struct Arrow {
-    let start: CGPoint
-    let end: CGPoint
-}
-
 struct DomainVisualization {
     let arrows: [Arrow]
-    let brightBoundaryPoints: [CGPoint]
-    let darkBoundaryPoints: [CGPoint]
+    let brightBoundaryPoints: [CGPoint]  // границы светлых доменов
+    let darkBoundaryPoints: [CGPoint]    // границы тёмных доменов
 }
 
-func analyzeDomains(from image: NSImage,
-                    targetSize: CGFloat = 400) -> DomainVisualization {
-    // 1. Получение растрового представления
-    guard let tiffData = image.tiffRepresentation,
-          let bitmap = NSBitmapImageRep( tiffData) else {
-        return DomainVisualization(arrows: [],
-                                   brightBoundaryPoints: [],
-                                   darkBoundaryPoints: [])
+/// Кэш для хранения данных анализа изображения (*@\label{logic:cache}@*)
+class ImageAnalysisCache {
+    let brightness: [[Double]]
+    let width: Int
+    let height: Int
+    let minB: Double
+    let maxB: Double
+    let range: Double
+    
+    // Базовые пороги, рассчитанные методом Otsu (абсолютные значения яркости)
+    let baseDarkThreshold: Double
+    let baseBrightThreshold: Double
+    
+    init(brightness: [[Double]], width: Int, height: Int, minB: Double, maxB: Double,
+         baseDarkThreshold: Double, baseBrightThreshold: Double) {
+        self.brightness = brightness
+        self.width = width
+        self.height = height
+        self.minB = minB
+        self.maxB = maxB
+        self.range = maxB - minB
+        self.baseDarkThreshold = baseDarkThreshold
+        self.baseBrightThreshold = baseBrightThreshold
+    }
+}
+
+/// Применение линейного множителя к порогу (*@\label{logic:slider}@*)
+func applySliderMultiplier(baseValue: Double, slider: Double) -> Double {
+    let multiplier = 0.8 + slider * 0.4
+    return baseValue * multiplier
+}
+
+/// Двухпороговый метод Otsu для разделения на 3 класса (*@\label{logic:otsu}@*)
+func otsuDualThreshold(brightness: [[Double]], width: Int, height: Int, trimPercent: Double = 0.05) -> (dark: Double, bright: Double) {
+    let numBins = 256
+    var histogram = [Int](repeating: 0, count: numBins)
+    var totalPixels = 0
+
+    // Построение полной гистограммы
+    for y in 0..<height {
+        for x in 0..<width {
+            let br = brightness[y][x]
+            let bin = min(numBins - 1, max(0, Int(br * Double(numBins - 1))))
+            histogram[bin] += 1
+            totalPixels += 1
+        }
+    }
+
+    guard totalPixels > 0 else {
+        return (dark: 0.33, bright: 0.66)
+    }
+
+    // Вычисление перцентилей для отбрасывания крайних значений (*@\label{logic:trim}@*)
+    let trimCount = Int(Double(totalPixels) * trimPercent)
+    var lowBin = 0
+    var highBin = numBins - 1
+    
+    var cumSum = 0
+    for i in 0..<numBins {
+        cumSum += histogram[i]
+        if cumSum >= trimCount {
+            lowBin = i
+            break
+        }
+    }
+    
+    cumSum = 0
+    for i in stride(from: numBins - 1, through: 0, by: -1) {
+        cumSum += histogram[i]
+        if cumSum >= trimCount {
+            highBin = i
+            break
+        }
+    }
+    
+    var trimmedHistogram = [Int](repeating: 0, count: numBins)
+    var trimmedTotalPixels = 0
+    
+    for i in lowBin...highBin {
+        trimmedHistogram[i] = histogram[i]
+        trimmedTotalPixels += histogram[i]
+    }
+    
+    guard trimmedTotalPixels > 0 else {
+        return (dark: 0.33, bright: 0.66)
+    }
+
+    var prob = [Double](repeating: 0, count: numBins)
+    var cumProb = [Double](repeating: 0, count: numBins)
+    var cumMean = [Double](repeating: 0, count: numBins)
+
+    for i in 0..<numBins {
+        prob[i] = Double(trimmedHistogram[i]) / Double(trimmedTotalPixels)
+    }
+
+    cumProb[0] = prob[0]
+    cumMean[0] = 0
+
+    for i in 1..<numBins {
+        cumProb[i] = cumProb[i - 1] + prob[i]
+        cumMean[i] = cumMean[i - 1] + Double(i) * prob[i]
+    }
+
+    let totalMean = cumMean[numBins - 1]
+
+    var maxVariance = -1.0 (*@\label{logic:variance}@*)
+    var bestT1 = numBins / 3
+    var bestT2 = 2 * numBins / 3
+
+    let step = max(1, numBins / 64)
+    
+    for t1 in stride(from: 1, to: numBins - 2, by: step) {
+        for t2 in stride(from: t1 + 1, to: numBins - 1, by: step) {
+            let w0 = cumProb[t1]
+            let w1 = cumProb[t2] - cumProb[t1]
+            let w2 = 1.0 - cumProb[t2]
+
+            if w0 <= 0 || w1 <= 0 || w2 <= 0 { continue }
+
+            let mu0 = cumMean[t1] / w0
+            let mu1 = (cumMean[t2] - cumMean[t1]) / w1
+            let mu2 = (totalMean - cumMean[t2]) / w2
+
+            let variance = w0 * (mu0 - totalMean) * (mu0 - totalMean) +
+                          w1 * (mu1 - totalMean) * (mu1 - totalMean) +
+                          w2 * (mu2 - totalMean) * (mu2 - totalMean)
+
+            if variance > maxVariance {
+                maxVariance = variance
+                bestT1 = t1
+                bestT2 = t2
+            }
+        }
+    }
+
+    let darkThreshold = Double(bestT1) / Double(numBins - 1)
+    let brightThreshold = Double(bestT2) / Double(numBins - 1)
+
+    return (dark: darkThreshold, bright: brightThreshold)
+}
+
+/// Создание кэша анализа изображения (*@\label{logic:createcache}@*)
+func createAnalysisCache(from image: NSImage) -> ImageAnalysisCache? {
+    guard
+        let tiffData = image.tiffRepresentation,
+        let bitmap = NSBitmapImageRep(data: tiffData)
+    else {
+        return nil
     }
 
     let width = bitmap.pixelsWide
     let height = bitmap.pixelsHigh
-\end{verbatim}
 
-На первом шаге изображение переводится в формат \texttt{NSBitmapImageRep}, что даёт прямой доступ к пикселям и их цветам. Далее реализуется вспомогательная функция вычисления яркости пикселя:
+    func brightnessAt(x: Int, y: Int) -> Double? { (*@\label{logic:brightness}@*)
+        guard
+            let color = bitmap.colorAt(x: x, y: y)?
+                .usingColorSpace(NSColorSpace.deviceRGB)
+        else { return nil }
 
-\begin{verbatim}
-    func brightnessAt(x: Int, y: Int) -> Double? {
-        guard let color = bitmap.colorAt(x: x, y: y)?
-                .usingColorSpace(.deviceRGB) else { return nil }
         let r = Double(color.redComponent)
         let g = Double(color.greenComponent)
         let b = Double(color.blueComponent)
         return 0.299 * r + 0.587 * g + 0.114 * b
     }
-\end{verbatim}
 
-Затем формируется двумерный массив яркостей и одновременно находятся минимальное и максимальное значения яркости для нормировки:
-
-\begin{verbatim}
-    var brightness = Array(
+    var brightness: [[Double]] = Array( (*@\label{logic:matrix}@*)
         repeating: Array(repeating: 0.0, count: width),
         count: height
     )
-    var minB = 1.0
+
+    var minB = 1.0 (*@\label{logic:minmax}@*)
     var maxB = 0.0
 
     for y in 0..<height {
@@ -578,32 +926,221 @@ func analyzeDomains(from image: NSImage,
         }
     }
 
-    if maxB <= minB {
-        return DomainVisualization(arrows: [],
-                                   brightBoundaryPoints: [],
-                                   darkBoundaryPoints: [])
+    guard maxB > minB else {
+        return nil
     }
-\end{verbatim}
 
-После нормировки яркости по отрезку \([0,1]\) осуществляется сегментация по порогу и выделение доменных областей. Параллельно по локальным изменениям яркости вычисляются векторы, ориентированные вдоль предполагаемого направления намагниченности или перпендикулярно границам доменов (в зависимости от выбранной модели). Координаты этих векторов пересчитываются в систему координат \texttt{Canvas} размером \texttt{targetSize} для корректного масштабирования при отрисовке.
+    let range = maxB - minB
+    var normalizedBrightness: [[Double]] = Array(
+        repeating: Array(repeating: 0.0, count: width),
+        count: height
+    )
+    for y in 0..<height {
+        for x in 0..<width {
+            normalizedBrightness[y][x] = (brightness[y][x] - minB) / range
+        }
+    }
 
-Границы доменов разделяются на светлые и тёмные: пиксели, где яркость выше верхнего порога, записываются в массив \texttt{brightBoundaryPoints}, а ниже нижнего порога — в \texttt{darkBoundaryPoints}. Это позволяет при визуализации раскрасить разные типы границ в разные цвета (например, светлые — зелёным, тёмные — красным). В конце функция возвращает заполненную структуру \texttt{DomainVisualization}:
+    let thresholds = otsuDualThreshold(brightness: normalizedBrightness, width: width, height: height) (*@\label{logic:basethresh}@*)
+    
+    let baseDarkThreshold = minB + thresholds.dark * range
+    let baseBrightThreshold = minB + thresholds.bright * range
 
-\begin{verbatim}
-    return DomainVisualization(
-        arrows: computedArrows,
-        brightBoundaryPoints: brightPoints,
-        darkBoundaryPoints: darkPoints
+    return ImageAnalysisCache(
+        brightness: brightness,
+        width: width,
+        height: height,
+        minB: minB,
+        maxB: maxB,
+        baseDarkThreshold: baseDarkThreshold,
+        baseBrightThreshold: baseBrightThreshold
     )
 }
-\end{verbatim}
 
-\subsection{Связка кода и физических моделей}
+/// Анализ доменов (*@\label{logic:analyze}@*)
+func analyzeDomains(cache: ImageAnalysisCache,
+                    targetSize: CGFloat = 400,
+                    darkSlider: Double = 0.5,
+                    brightSlider: Double = 0.5) -> DomainVisualization {
 
-Реализованный алгоритм непосредственно соответствует описанной ранее схеме: изображение преобразуется в карту яркости, нормируется, по градиенту и порогу выделяются доменные области и их границы, а затем формируется векторное поле, соответствующее локальному направлению магнитного момента. Разделение границ на «светлые» и «тёмные» увеличивает информативность визуализации и позволяет, при необходимости, сопоставлять их с различными типами доменных стенок, описанными в физической части работы.
+    let width = cache.width
+    let height = cache.height
+    let brightness = cache.brightness
 
-Таким образом, программное приложение выступает практической реализацией физико-математической модели анализа магнитных доменов, обеспечивая удобный интерфейс для обработки реальных МОЭК-изображений и последующего визуального и количественного анализа.
+    let tDark = applySliderMultiplier(baseValue: cache.baseDarkThreshold, slider: darkSlider) (*@\label{logic:applythresh}@*)
+    let tBright = applySliderMultiplier(baseValue: cache.baseBrightThreshold, slider: brightSlider)
 
+    struct Domain {
+        var points: [(Int, Int)]
+        var isBright: Bool
+        var index: Int
+    }
+
+    var labels = Array(
+        repeating: Array(repeating: -1, count: width),
+        count: height
+    )
+
+    var domains: [Domain] = []
+
+    let neighbors = [
+        (dx: 1,  dy: 0),
+        (dx: -1, dy: 0),
+        (dx: 0,  dy: 1),
+        (dx: 0,  dy: -1)
+    ]
+
+    for y in 0..<height { (*@\label{logic:bfs}@*)
+        for x in 0..<width {
+            let br = brightness[y][x]
+            let isBright = br >= tBright
+            let isDark = br <= tDark
+
+            if !(isBright || isDark) { continue }
+            if labels[y][x] != -1 { continue }
+
+            let classIsBright = isBright
+            let labelIndex = domains.count
+
+            var queue: [(Int, Int)] = []
+            var pts: [(Int, Int)] = []
+
+            labels[y][x] = labelIndex
+            queue.append((x, y))
+
+            while !queue.isEmpty {
+                let (cx, cy) = queue.removeFirst()
+                pts.append((cx, cy))
+
+                for n in neighbors {
+                    let nx = cx + n.dx
+                    let ny = cy + n.dy
+
+                    if nx < 0 || nx >= width || ny < 0 || ny >= height { continue }
+                    if labels[ny][nx] != -1 { continue }
+
+                    let nbr = brightness[ny][nx]
+                    let nIsBright = nbr >= tBright
+                    let nIsDark = nbr <= tDark
+
+                    if classIsBright {
+                        if !nIsBright { continue }
+                    } else {
+                        if !nIsDark { continue }
+                    }
+
+                    labels[ny][nx] = labelIndex
+                    queue.append((nx, ny))
+                }
+            }
+
+            domains.append(
+                Domain(points: pts, isBright: classIsBright, index: labelIndex)
+            )
+        }
+    }
+
+    let minDomainPixels = max(50, (width * height) / 5000) (*@\label{logic:filter}@*)
+    let filteredDomains = domains.filter { $0.points.count >= minDomainPixels }
+
+    let imageAspect = CGFloat(width) / CGFloat(height)
+    var displayWidth: CGFloat
+    var displayHeight: CGFloat
+    var offsetX: CGFloat = 0
+    var offsetY: CGFloat = 0
+
+    if imageAspect > 1.0 {
+        displayWidth = targetSize
+        displayHeight = targetSize / imageAspect
+        offsetY = (targetSize - displayHeight) / 2
+    } else {
+        displayHeight = targetSize
+        displayWidth = targetSize * imageAspect
+        offsetX = (targetSize - displayWidth) / 2
+    }
+
+    let scaleX = displayWidth / CGFloat(width)
+    let scaleY = displayHeight / CGFloat(height)
+
+    var arrows: [Arrow] = []
+    var brightBoundaryPoints: [CGPoint] = []
+    var darkBoundaryPoints: [CGPoint] = []
+
+    for domain in filteredDomains { (*@\label{logic:boundary}@*)
+        let labelIndex = domain.index
+
+        for (x, y) in domain.points {
+            var isBoundary = false
+
+            for n in neighbors {
+                let nx = x + n.dx
+                let ny = y + n.dy
+
+                if nx < 0 || nx >= width || ny < 0 || ny >= height {
+                    isBoundary = true
+                    break
+                }
+
+                if labels[ny][nx] != labelIndex {
+                    isBoundary = true
+                    break
+                }
+            }
+
+            if isBoundary {
+                let px = CGFloat(x) * scaleX + offsetX
+                let py = CGFloat(y) * scaleY + offsetY
+                let p = CGPoint(x: px, y: py)
+
+                if domain.isBright {
+                    brightBoundaryPoints.append(p)
+                } else {
+                    darkBoundaryPoints.append(p)
+                }
+            }
+        }
+    }
+
+    let baseLength: CGFloat = 40
+
+    for domain in filteredDomains { (*@\label{logic:centroid}@*)
+        var sumX = 0.0
+        var sumY = 0.0
+
+        for (x, y) in domain.points {
+            sumX += Double(x)
+            sumY += Double(y)
+        }
+
+        let count = Double(domain.points.count)
+        let cx = sumX / count
+        let cy = sumY / count
+
+        let sx = CGFloat(cx) * scaleX + offsetX
+        let sy = CGFloat(cy) * scaleY + offsetY
+
+        let dir: CGFloat = domain.isBright ? 1.0 : -1.0 (*@\label{logic:direction}@*)
+        let ex = sx
+        let ey = sy + dir * baseLength
+
+        let color: Color = domain.isBright ? .red : .blue
+
+        arrows.append(
+            Arrow(
+                start: CGPoint(x: sx, y: sy),
+                end: CGPoint(x: ex, y: ey),
+                color: color
+            )
+        )
+    }
+
+    return DomainVisualization(
+        arrows: arrows,
+        brightBoundaryPoints: brightBoundaryPoints,
+        darkBoundaryPoints: darkBoundaryPoints
+    )
+}
+\end{lstlisting}
 
 \end{document}
 
