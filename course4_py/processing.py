@@ -38,25 +38,42 @@ def plot_v(table):
     y_raw = table[:, 1]
     vx_raw = table[:, 2].copy()
     vy_raw = table[:, 3].copy()
-    vx_bg = bg_v(vx_raw, 9)
-    vy_bg = bg_v(vy_raw, 9)
+    vx_bg = bg_v(vx_raw, 20)
+    vy_bg = bg_v(vy_raw, 20)
       
     vx_raw = vx_raw - vx_bg
     
     vy_raw = vy_raw - vy_bg
 
-    step = 15
-    x = x_raw[::step]
-    y = y_raw[::step]
-    vx = vx_raw[::step] / 80 
-    vy = vy_raw[::step] / 80 
+    # 1. Вычисляем реальные размеры нашей картинки (ширину и высоту)
+    # Так как координаты начинаются с 0, прибавляем 1 к максимуму
+    w = int(x_raw.max() + 1)
+    h = int(y_raw.max() + 1)
 
+    # 2. Превращаем плоские 1D-массивы в 2D-матрицы
+    x_2d = x_raw.reshape(h, w)
+    y_2d = y_raw.reshape(h, w)
+    vx_2d = vx_raw.reshape(h, w)
+    vy_2d = vy_raw.reshape(h, w)
+
+    # 3. Делаем правильный двумерный срез и сразу "сплющиваем" обратно (flatten) для quiver
+    step = 5
+    x = x_2d[::step, ::step].flatten()
+    y = y_2d[::step, ::step].flatten()
+    
+    vx = vx_2d[::step, ::step].flatten() 
+    vy = vy_2d[::step, ::step].flatten() 
+    
+    lengths = np.sqrt(vx**2 + vy**2)
+    lengths[lengths == 0] = 1.0
+    vx_norm = 3 * vx / lengths
+    vy_norm = 3 * vy / lengths
 
     # СОЗДАЕМ ГРАФИК
     plt.figure(figsize=(12, 10))
 
     # Рисуем векторы
-    plt.quiver(x, y, vx, vy, 
+    plt.quiver(x, y, vx_norm, vy_norm, 
                color='red', 
                scale=70,  # регулирует длину стрелок
                width=0.002,
@@ -73,7 +90,6 @@ def plot_v(table):
     
     print(f"Построено {len(x)} векторов")
     print("График сохранен в vector_field_processed.png")
-
 
 def save_original_table(table):
     """Сохраняет оригинальные значения таблицы в CSV файл"""
